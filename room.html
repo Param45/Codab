@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codab - Collaborative Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="room.css">
+</head>
+<body>
+    <div id="container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div id="sidebar-content">
+                <div class="sidebar-header">
+                    <h2>Codab</h2>
+                </div>
+                
+                <div class="action-buttons">
+                    <div class="btn-group">
+                        <button id="new-file-btn" class="action-btn" title="New File">
+                            <i class="fas fa-file"></i> New
+                        </button>
+                        <input type="file" id="file-upload" class="hidden-upload">
+                        <button id="upload-btn" class="action-btn" title="Upload File">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+                    <div id="upload-status" class="status-message"></div>
+                    
+                    <div class="btn-group">
+                        <button id="drawboard-btn" class="action-btn" title="Drawing Board">
+                            <i class="fas fa-paint-brush"></i> Draw
+                        </button>
+                        <button id="open-chat-btn" class="action-btn" title="Open Chat">
+                            <i class="fas fa-comments"></i> Chat
+                            <span class="notification-dot"></span>
+                        </button>
+                        <button id="roomDetails" class="action-btn" title="Copy Room ID">
+                            <i class="fas fa-copy"></i> Copy ID
+                        </button>
+                    </div>
+                </div>
+
+                <div id="file-explorer">
+                    <div class="explorer-header">
+                        <h3><i class="fas fa-folder"></i> File Explorer</h3>
+                    </div>
+                    <div id="file-list">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div id="users-section">
+                    <div class="users-header">
+                        <h3><i class="fas fa-users"></i> Online Users</h3>
+                        <span id="user-count" class="user-count">0</span>
+                    </div>
+                    <div id="usersList"></div>
+                </div>
+            </div>
+
+            <!-- Full Sidebar Chat -->
+            <div id="chat-container">
+                <div class="chat-header">
+                    <button id="back-from-chat" class="icon-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h3><i class="fas fa-comment-dots"></i> Chat</h3>
+                    <div></div> <!-- Empty div for spacing -->
+                </div>
+                <div id="chat-messages"></div>
+                <div id="message-input-container">
+                    <input type="text" id="message-input" placeholder="Type your message...">
+                    <button id="send-message-btn" class="action-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div id="main">
+            <div id="editor-tabs">
+                <div class="tabs-container" id="tabs-container"></div>
+                <button id="add-tab-btn" class="icon-btn" title="New Tab">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>            
+            
+            <div id="editor-container">
+                <div class="editor-resize-handle"></div>
+            </div>
+            
+            <div id="execution-controls">
+                <div class="execution-options">
+                    <button id="execute-btn" class="action-btn primary">
+                      <i class="fas fa-play"></i> Run Code
+                    </button>
+                 </div>
+                  
+                
+                <div id="input-output-container">
+                    <div class="io-tabs">
+                        <button class="io-tab active" data-target="input-panel">Input</button>
+                        <button class="io-tab" data-target="output-panel">Output</button>
+                    </div>
+                    
+                    <div id="input-panel" class="io-panel active">
+                        <textarea id="custom-input" placeholder="Enter your input here..."></textarea>
+                    </div>
+                    
+                    <div id="output-panel" class="io-panel">
+                        <div id="execution-result"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="execution-toggle-bar">
+                <button id="toggle-exec-panel" class="action-btn" title="Show/Hide Execution Panel">
+                  <i class="fas fa-terminal"></i> Toggle Output Panel
+                </button>
+              </div>
+        </div>
+        
+    </div>  
+    
+<!-- Drawing Board Modal -->
+<div id="drawboard-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Collaborative Drawing Board</h3>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <button class="tool-btn pen-tool selected" data-tool="pen">Pen</button>
+                    <button class="tool-btn eraser-tool" data-tool="eraser">Eraser</button>
+                </div>
+                <div class="color-picker">
+                    <div class="color black selected" data-color="black"></div>
+                    <div class="color red" data-color="red"></div>
+                    <div class="color blue" data-color="blue"></div>
+                    <div class="color green" data-color="green"></div>
+                    <div class="color yellow" data-color="yellow"></div>
+                </div>
+                <div class="pen-types">
+                    <button class="pen-type thin selected" data-size="2">Thin</button>
+                    <button class="pen-type medium" data-size="5">Medium</button>
+                    <button class="pen-type thick" data-size="10">Thick</button>
+                </div>
+                <button id="clear-canvas">Clear</button>
+            </div>
+            <canvas id="drawing-canvas"></canvas>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="toast">
+        <div class="toast-content">
+            <i class="fas fa-info-circle"></i>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- User Join/Leave Notification -->
+    <div id="user-notification" class="user-notification">
+        <i class="fas fa-user-plus"></i>
+        <div class="user-notification-content"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+    <script src="room.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('toggle-exec-panel');
+        const execPanel = document.getElementById('execution-controls');
+      
+        toggleBtn.addEventListener('click', () => {
+          execPanel.classList.toggle('hidden');
+        });
+      </script>
+      
+</body>
+</html>
